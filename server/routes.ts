@@ -119,45 +119,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Chat endpoint - using FastAPI proxy
+  // AI Chat endpoint - FastAPI proxy
   app.post("/api/ai/chat", async (req, res) => {
+    const fastApiUrl = "http://127.0.0.1:8001";
+    
+    // First check if FastAPI is available
     try {
-      // Check if OpenAI API key is provided
-      const hasOpenAIKey = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== "";
+      const healthCheck = await fetch(`${fastApiUrl}/health`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(3000)
+      });
       
-      if (hasOpenAIKey) {
-        // Try to use FastAPI proxy
-        try {
-          const fastApiUrl = "http://localhost:8001";
-          const response = await fetch(`${fastApiUrl}/ai/chat`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${process.env.AUTH_TOKEN || "default_auth_token"}`,
-            },
-            body: JSON.stringify(req.body),
-          });
+      if (!healthCheck.ok) {
+        throw new Error("FastAPI health check failed");
+      }
+    } catch (error) {
+      console.error("FastAPI не доступен:", error);
+      return res.status(500).json({ 
+        error: "FastAPI прокси не запущен. Запустите workflow 'Start FastAPI Proxy' из выпадающего меню."
+      });
+    }
 
-          if (response.ok) {
-            const data = await response.json();
-            return res.json(data);
-          } else {
-            const error = await response.text();
-            console.log("FastAPI error:", error);
-          }
-        } catch (fastApiError) {
-          console.log("FastAPI unavailable:", fastApiError);
-        }
+    // Send request to FastAPI
+    try {
+      const response = await fetch(`${fastApiUrl}/ai/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req.body),
+        signal: AbortSignal.timeout(30000)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ AI response received successfully");
+        return res.json(data);
+      } else {
+        const errorText = await response.text();
+        console.error("FastAPI error response:", errorText);
+        return res.status(response.status).json({ 
+          error: `AI service error: ${errorText}` 
+        });
       }
       
-      // Use mock AI response as fallback
-      const { mockAIChat } = await import('./ai-mock');
-      const response = await mockAIChat(req.body);
-      res.json(response);
-      
     } catch (error) {
-      console.error("AI Chat error:", error);
-      res.status(500).json({ error: "AI service unavailable" });
+      console.error("FastAPI request error:", error);
+      return res.status(500).json({ 
+        error: "Ошибка соединения с AI сервисом. Проверьте что FastAPI прокси запущен." 
+      });
     }
   });
 
