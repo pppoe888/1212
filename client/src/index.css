@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(215 28% 17%);
+  --foreground: hsl(213 31% 91%);
+  --card: hsl(217 33% 17%);
+  --card-foreground: hsl(213 31% 91%);
+  --popover: hsl(217 33% 17%);
+  --popover-foreground: hsl(213 31% 91%);
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(215 25% 27%);
+  --secondary-foreground: hsl(213 31% 91%);
+  --muted: hsl(215 25% 27%);
+  --muted-foreground: hsl(217 10% 64%);
+  --accent: hsl(215 25% 27%);
+  --accent-foreground: hsl(213 31% 91%);
+  --destructive: hsl(0 63% 31%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(215 20% 35%);
+  --input: hsl(215 25% 27%);
+  --ring: hsl(217 91% 60%);
+  
+  /* Custom colors for IDE theme */
+  --editor-bg: hsl(215 28% 6%);
+  --panel-bg: hsl(217 33% 17%);
+  --panel-border: hsl(215 20% 35%);
+  --surface: hsl(215 25% 27%);
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: hsl(215 28% 6%);
+  --foreground: hsl(213 31% 91%);
+  --card: hsl(217 33% 17%);
+  --card-foreground: hsl(213 31% 91%);
+  --popover: hsl(217 33% 17%);
+  --popover-foreground: hsl(213 31% 91%);
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(215 25% 27%);
+  --secondary-foreground: hsl(213 31% 91%);
+  --muted: hsl(215 25% 27%);
+  --muted-foreground: hsl(217 10% 64%);
+  --accent: hsl(215 25% 27%);
+  --accent-foreground: hsl(213 31% 91%);
+  --destructive: hsl(0 63% 31%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(215 20% 35%);
+  --input: hsl(215 25% 27%);
+  --ring: hsl(217 91% 60%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--editor-bg);
+    color: var(--foreground);
+  }
+}
+
+/* Monaco Editor Theme */
+.monaco-editor {
+  background-color: var(--editor-bg) !important;
+}
+
+.monaco-editor .margin {
+  background-color: hsl(215 28% 12%) !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--panel-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* File tree styles */
+.file-tree-item {
+  @apply flex items-center space-x-2 px-2 py-1.5 rounded hover:bg-surface cursor-pointer transition-colors;
+}
+
+.file-tree-item.active {
+  @apply bg-blue-900/30 border border-blue-600/30;
+}
+
+.file-tree-item.active .file-name {
+  @apply text-blue-200 font-medium;
+}
+
+/* Chat message styles */
+.chat-message {
+  @apply flex space-x-3 mb-4;
+}
+
+.chat-message.user {
+  @apply justify-end;
+}
+
+.chat-message-content {
+  @apply rounded-lg px-3 py-2 text-sm max-w-xs;
+}
+
+.chat-message.user .chat-message-content {
+  @apply bg-blue-600 text-white ml-auto;
+}
+
+.chat-message.assistant .chat-message-content {
+  @apply bg-surface text-slate-200;
+}
+
+/* Loading animation */
+.loading-dots {
+  @apply flex space-x-1;
+}
+
+.loading-dots div {
+  @apply w-2 h-2 bg-slate-400 rounded-full animate-bounce;
+}
+
+.loading-dots div:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.loading-dots div:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+/* Toast styles */
+.toast-success {
+  @apply bg-green-600 text-white;
+}
+
+.toast-error {
+  @apply bg-red-600 text-white;
+}
+
+.toast-info {
+  @apply bg-blue-600 text-white;
+}
